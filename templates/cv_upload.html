@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}CV yükle{% endblock %}
+{% block content %}
+<h1>Özgeçmişinizi yükleyin</h1>
+<p class="lead">Merhaba {{ c.ad }}, ön değerlendirmeyi geçtiniz. Özgeçmişinizi PDF olarak yükleyin.</p>
+<form method="post" enctype="multipart/form-data">
+  <label class="f" style="max-width:28rem">Özgeçmiş (PDF)<input type="file" name="cv" accept="application/pdf" required></label>
+  <p><button type="submit">Yükle</button></p>
+</form>
+{% endblock %}

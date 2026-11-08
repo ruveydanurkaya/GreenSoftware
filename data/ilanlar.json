@@ -1,0 +1,6 @@
+[
+ {"id":"backend","baslik":"Backend Geliştirici","zorunlu":["python","sql","git"],"tercih":["docker","linux","aws"],"min_deneyim":2},
+ {"id":"veri","baslik":"Veri Analisti","zorunlu":["sql","excel","veri-analizi"],"tercih":["power-bi","python","iletisim"],"min_deneyim":1},
+ {"id":"pazarlama","baslik":"Dijital Pazarlama Uzmanı","zorunlu":["seo","iletisim","excel"],"tercih":["figma","veri-analizi","sosyal-medya"],"min_deneyim":1},
+ {"id":"satis","baslik":"Satış Temsilcisi","zorunlu":["satis","musteri-iliskileri","iletisim"],"tercih":["excel","sap"],"min_deneyim":1}
+]

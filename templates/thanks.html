@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Başvurunuz alındı{% endblock %}
+{% block content %}
+<h1>Başvurunuz alındı</h1>
+<p class="lead">Ön değerlendirmeyi geçerseniz e-posta ile özgeçmişinizi isteyeceğiz.</p>
+<div class="pair">
+  <div><div class="stat">{{ size|bytes }}</div><small>Başvurunuzun sunucuda kapladığı alan</small></div>
+  <div><div class="stat" style="color:var(--old)">≈ {{ (pdf_kb*1024)|bytes }}</div><small>Aynı bilgileri içeren tipik bir PDF özgeçmiş (varsayım)</small></div>
+</div>
+<p><a class="btn" href="{{ url_for('candidate', cid=cid) }}">Kaydı İK ekranında gör</a></p>
+{% endblock %}

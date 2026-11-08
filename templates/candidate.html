@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ c.ad }} · İK paneli{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('panel', ilan=job.id if job else None) }}">‹ Listeye dön</a></p>
+<h1>{{ c.ad }}</h1>
+<p class="lead">{{ c.son_pozisyon or 'Pozisyon belirtilmedi' }} · Durum: <strong>{{ c.durum|durum }}</strong></p>
+
+{% if match %}
+<div class="note"><strong>{{ job.baslik }}</strong> ilanı ile eşleşme:
+  zorunlu var {% for s in match.var %}<span class="tag">{{ s|etiket }}</span>{% else %}-{% endfor %}
+  eksik {% for s in match.eksik %}<span class="tag miss">{{ s|etiket }}</span>{% else %}-{% endfor %}
+  tercih {% for s in match.tercih %}<span class="tag">{{ s|etiket }}</span>{% else %}-{% endfor %}
+</div>
+{% endif %}
+
+<dl class="rec">
+  <dt>E-posta</dt><dd>{{ c.email }}</dd>
+  <dt>Eğitim</dt><dd>{{ c.egitim.seviye }}, {{ c.egitim.bolum }}, {{ c.egitim.okul }} ({{ c.egitim.yil }})</dd>
+  <dt>Deneyim</dt><dd>{{ c.deneyim_yil }} yıl</dd>
+  <dt>Yetenekler</dt><dd>{% for s in c.yetenekler %}<span class="tag">{{ s|etiket }}</span>{% endfor %}</dd>
+  <dt>Diller</dt><dd>{{ c.diller|join(', ') or '-' }}</dd>
+  <dt>Hakkında</dt><dd>{{ c.hakkinda or '-' }}</dd>
+  <dt>Kayıt boyutu</dt><dd>{{ size|bytes }} (tipik PDF CV ≈ {{ (pdf_kb*1024)|bytes }})</dd>
+</dl>
+
+<form method="post" action="{{ url_for('set_status', cid=c.id) }}" style="display:flex;gap:.6rem;flex-wrap:wrap">
+  <input type="hidden" name="ilan" value="{{ job.id if job else '' }}">
+  <button name="durum" value="cv_istendi">CV iste</button>
+  <button class="ghost" name="durum" value="elendi">Ele</button>
+  <button class="ghost" name="durum" value="yeni">Yeni olarak işaretle</button>
+</form>
+{% if has_cv %}<p style="margin-top:1rem"><a class="btn" href="{{ url_for('download_cv', cid=c.id) }}">CV'yi indir (PDF)</a></p>
+{% elif c.durum == 'cv_istendi' %}<p style="margin-top:1rem">Aday CV yüklemesini bekliyor. Yükleme bağlantısı: <a href="{{ url_for('upload_cv', cid=c.id) }}">{{ url_for('upload_cv', cid=c.id) }}</a></p>{% endif %}
+<p class="lead" style="margin-top:1rem">CV dosyası yalnızca “CV iste” dedikten sonra, ilk eleme aşamasını geçen adaydan alınır.</p>
+{% endblock %}

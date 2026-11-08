@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Klasik işe alım{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>header.top{background:#3A3F44} header.top nav a:hover,header.top nav a[aria-current]{border-color:var(--old)}</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="{{ url_for('classic.apply') }}">Klasik işe alım</a>
+  <nav>
+    <a href="{{ url_for('classic.apply') }}" {% if request.endpoint in ('classic.apply','classic.thanks') %}aria-current="page"{% endif %}>CV yükle</a>
+    <a href="{{ url_for('classic.panel') }}" {% if request.endpoint=='classic.panel' %}aria-current="page"{% endif %}>İK paneli</a>
+    <a href="{{ url_for('apply') }}">Yeşil sisteme git</a>
+    <a href="{{ url_for('compare') }}">Karşılaştırma</a>
+  </nav>
+</div></header>
+<main><div class="wrap">{% block content %}{% endblock %}</div></main>
+<div class="wrap"><footer>Karşılaştırma için hazırlanan klasik sistem: PDF yükle, sunucuda ayrıştır, İK dosyayı indirsin.</footer></div>
+</body>
+</html>

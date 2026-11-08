@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}İK paneli · Yeşil İşe Alım{% endblock %}
+{% block content %}
+<h1>İK paneli</h1>
+<p class="lead">İlan seçin. Adaylar, ilanın istediği yeteneklerle Set kesişimi alınarak puanlanır.</p>
+
+<form method="get" class="params">
+  <label class="f" style="width:18rem">İlan
+    <select name="ilan" onchange="this.form.submit()">
+      {% for j in jobs %}<option value="{{ j.id }}" {% if j.id==job.id %}selected{% endif %}>{{ j.baslik }}</option>{% endfor %}
+    </select></label>
+  <noscript><button type="submit">Göster</button></noscript>
+</form>
+
+<p><strong>Zorunlu:</strong> {% for s in job.zorunlu %}<span class="tag">{{ s|etiket }}</span>{% endfor %}
+&nbsp;<strong>Tercih:</strong> {% for s in job.tercih %}<span class="tag">{{ s|etiket }}</span>{% endfor %}
+&nbsp;<strong>En az deneyim:</strong> {{ job.min_deneyim }} yıl</p>
+
+<div class="note">Bu liste <strong>{{ payload|bytes }}</strong> veri taşıdı ({{ rows|length }} aday gösteriliyor, havuzda {{ pool }} aday var).
+Aynı adayların CV dosyalarını indirmek ≈ <strong>{{ (rows|length * pdf_kb * 1024)|bytes }}</strong> tutardı (CV başına {{ pdf_kb }} KB varsayımıyla).</div>
+
+{% if rows %}
+<div class="scroll"><table>
+<thead><tr><th class="num">Puan</th><th>Aday</th><th class="num">Deneyim</th><th>Zorunlu yetenek</th><th>Eksik</th><th>Durum</th></tr></thead>
+<tbody>
+{% for r in rows %}
+<tr>
+  <td class="num"><span class="score {% if r.puan < 50 %}low{% endif %}">{{ r.puan }}</span></td>
+  <td><a href="{{ url_for('candidate', cid=r.id, ilan=job.id) }}">{{ r.ad }}</a><br><small>{{ r.pozisyon }}</small></td>
+  <td class="num">{{ r.deneyim }} yıl</td>
+  <td>{{ r.zorunlu_var }} / {{ r.zorunlu_toplam }}</td>
+  <td>{% for s in r.eksik %}<span class="tag miss">{{ s|etiket }}</span>{% else %}-{% endfor %}</td>
+  <td class="status">{{ r.durum|durum }}</td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+{% else %}
+<p>Bu ilanın yeteneklerine sahip aday henüz yok. Başvuru formundan aday ekleyebilirsiniz.</p>
+{% endif %}
+{% endblock %}

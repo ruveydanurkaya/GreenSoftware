@@ -1,0 +1,6 @@
+{% extends "classic_base.html" %}
+{% block content %}
+<h1>Başvurunuz alındı</h1>
+<p class="lead">Özgeçmişiniz sunucuya yüklendi ve ayrıştırıldı.</p>
+<p><a class="btn" href="{{ url_for('classic.cv', cid=cid) }}">Yüklenen PDF'i aç</a></p>
+{% endblock %}

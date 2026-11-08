@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Yeşil İşe Alım{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="{{ url_for('apply') }}">Yeşil İşe Alım</a>
+  <nav>
+    <a href="{{ url_for('apply') }}" {% if request.endpoint in ('apply','thanks') %}aria-current="page"{% endif %}>Başvuru formu</a>
+    <a href="{{ url_for('panel') }}" {% if request.endpoint in ('panel','candidate') %}aria-current="page"{% endif %}>İK paneli</a>
+    <a href="{{ url_for('classic.apply') }}">Klasik sistem</a>
+    <a href="{{ url_for('compare') }}" {% if request.endpoint=='compare' %}aria-current="page"{% endif %}>Karşılaştırma</a>
+  </nav>
+</div></header>
+<main><div class="wrap">{% block content %}{% endblock %}</div></main>
+<div class="wrap"><footer>Ağır CV dosyası yok, ayrıştırma yok: sadece birkaç yüz baytlık JSON.</footer></div>
+</body>
+</html>

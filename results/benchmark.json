@@ -1,0 +1,91 @@
+{
+ "created": "2026-11-03T07:07:32",
+ "machine": "Linux x86_64, Python 3.12.3",
+ "params": {
+  "n": 200,
+  "shortlist": 0.1,
+  "views": 3,
+  "scan_ratio": 0.0,
+  "photo_px": 500
+ },
+ "n_jobs": 4,
+ "n_shortlist": 20,
+ "avg_pdf_bytes": 155812.235,
+ "avg_json_bytes": 457.615,
+ "green": {
+  "phases": {
+   "1_basvuru": {
+    "cpu_s": 0.13000000000000078,
+    "up": 90358,
+    "down": 282000,
+    "requests": 400,
+    "wall_mean_ms": 0.36246976500009964,
+    "wall_p95_ms": 0.4622400000187099
+   },
+   "2_liste": {
+    "cpu_s": 0.009999999999999787,
+    "up": 0,
+    "down": 65765,
+    "requests": 4,
+    "wall_mean_ms": 3.71310699999583,
+    "wall_p95_ms": 2.489268999994465
+   },
+   "3_inceleme": {
+    "cpu_s": 0.16999999999999993,
+    "up": 0,
+    "down": 1188828,
+    "requests": 600,
+    "wall_mean_ms": 0.2909184166674569,
+    "wall_p95_ms": 0.3325840000059088
+   },
+   "4_cv_takip": {
+    "cpu_s": 0.07000000000000206,
+    "up": 3115837,
+    "down": 9355551,
+    "requests": 100,
+    "wall_mean_ms": 0.5958600900009969,
+    "wall_p95_ms": 1.3998619999995299
+   }
+  },
+  "cpu_s": 0.38000000000000256,
+  "stored": 3206960,
+  "transferred": 14098339,
+  "requests": 1104,
+  "accuracy": 1.0
+ },
+ "classic": {
+  "phases": {
+   "1_basvuru": {
+    "cpu_s": 1.3699999999999992,
+    "up": 31168581,
+    "down": 259400,
+    "requests": 400,
+    "wall_mean_ms": 3.4511624725010392,
+    "wall_p95_ms": 6.889318999981242
+   },
+   "2_liste": {
+    "cpu_s": 0.009999999999999787,
+    "up": 0,
+    "down": 56464,
+    "requests": 4,
+    "wall_mean_ms": 2.4968155000024694,
+    "wall_p95_ms": 2.1779520000109187
+   },
+   "3_inceleme": {
+    "cpu_s": 0.15999999999999837,
+    "up": 0,
+    "down": 93487341,
+    "requests": 600,
+    "wall_mean_ms": 0.2565708816659177,
+    "wall_p95_ms": 0.33069099998783713
+   }
+  },
+  "cpu_s": 1.5399999999999974,
+  "stored": 31205947,
+  "transferred": 124971786,
+  "requests": 1004,
+  "accuracy": 0.9661527777777777,
+  "parse_cpu_s": 1.0199999999999925,
+  "ocr_count": 0
+ }
+}

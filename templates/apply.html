@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Başvuru formu · Yeşil İşe Alım{% endblock %}
+{% block content %}
+<h1>Başvuru formu</h1>
+<p class="lead">CV dosyası yüklemenize gerek yok. Bilgilerinizi aşağıya girin. Ön değerlendirmeyi geçerseniz sizden özgeçmişinizi isteriz.</p>
+
+{% if errors %}<div class="errors" role="alert">{% for e in errors %}<p>{{ e }}</p>{% endfor %}</div>{% endif %}
+
+<form method="post" novalidate>
+<fieldset><legend>Kişisel bilgiler</legend>
+<div class="grid">
+  <label class="f">Ad soyad<input type="text" name="ad" required value="{{ form.get('ad','') }}" autocomplete="name"></label>
+  <label class="f">E-posta<input type="email" name="email" required value="{{ form.get('email','') }}" autocomplete="email"></label>
+</div></fieldset>
+
+<fieldset><legend>Eğitim</legend>
+<div class="grid">
+  <label class="f">Seviye
+    <select name="seviye">{% for s in ['Ön Lisans','Lisans','Yüksek Lisans','Doktora'] %}<option {% if form.get('seviye','Lisans')==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></label>
+  <label class="f">Bölüm<input type="text" name="bolum" value="{{ form.get('bolum','') }}"></label>
+  <label class="f">Okul<input type="text" name="okul" value="{{ form.get('okul','') }}"></label>
+  <label class="f">Mezuniyet yılı<input type="number" name="yil" min="1970" max="2040" value="{{ form.get('yil','') }}"></label>
+</div></fieldset>
+
+<fieldset><legend>Deneyim</legend>
+<div class="grid">
+  <label class="f">Toplam deneyim (yıl)<input type="number" name="deneyim_yil" min="0" max="50" value="{{ form.get('deneyim_yil','0') }}"></label>
+  <label class="f">Son pozisyon<input type="text" name="son_pozisyon" value="{{ form.get('son_pozisyon','') }}"></label>
+  <label class="f">Yabancı diller (virgülle)<input type="text" name="diller" value="{{ form.get('diller','') }}"></label>
+</div></fieldset>
+
+<fieldset><legend>Yetenekler</legend>
+{% set picked = form.getlist('yetenek') %}
+{% for group, skills in taxonomy.items() %}
+  <p class="group-name">{{ group }}</p>
+  <div class="chips">{% for s in skills %}
+    <label class="chip"><input type="checkbox" name="yetenek" value="{{ s }}" {% if s in picked %}checked{% endif %}><span>{{ s|etiket }}</span></label>
+  {% endfor %}</div>
+{% endfor %}
+<label class="f" style="margin-top:1rem;max-width:28rem">Listede olmayan yetenekler (virgülle, en çok 10)
+  <input type="text" name="diger" value="{{ form.get('diger','') }}"></label>
+</fieldset>
+
+<fieldset><legend>Kısaca kendiniz</legend>
+<label class="f">En çok 300 karakter<textarea name="hakkinda" rows="3" maxlength="300">{{ form.get('hakkinda','') }}</textarea></label>
+</fieldset>
+
+<button type="submit">Başvuruyu gönder</button>
+</form>
+{% endblock %}

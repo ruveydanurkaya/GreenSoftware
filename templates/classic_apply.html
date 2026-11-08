@@ -1,0 +1,14 @@
+{% extends "classic_base.html" %}
+{% block content %}
+<h1>CV yükle</h1>
+<p class="lead">Özgeçmişinizi PDF olarak yükleyin. Yetenekleriniz dosyadan otomatik çıkarılır.</p>
+{% if errors %}<div class="errors" role="alert">{% for e in errors %}<p>{{ e }}</p>{% endfor %}</div>{% endif %}
+<form method="post" enctype="multipart/form-data">
+  <div class="grid" style="max-width:40rem">
+    <label class="f">Ad soyad<input type="text" name="ad" required></label>
+    <label class="f">E-posta<input type="email" name="email" required></label>
+    <label class="f">Özgeçmiş (PDF)<input type="file" name="cv" accept="application/pdf" required></label>
+  </div>
+  <p><button type="submit">Başvuruyu gönder</button></p>
+</form>
+{% endblock %}

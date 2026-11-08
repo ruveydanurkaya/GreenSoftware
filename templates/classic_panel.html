@@ -1,0 +1,27 @@
+{% extends "classic_base.html" %}
+{% block content %}
+<h1>İK paneli</h1>
+<p class="lead">İlan seçin. Her aday için CV dosyasını indirip inceleyin.</p>
+<form method="get" class="params">
+  <label class="f" style="width:18rem">İlan
+    <select name="ilan" onchange="this.form.submit()">
+      {% for j in jobs %}<option value="{{ j.id }}" {% if j.id==job.id %}selected{% endif %}>{{ j.baslik }}</option>{% endfor %}
+    </select></label>
+  <noscript><button type="submit">Göster</button></noscript>
+</form>
+<p>{{ total }} başvuru, en iyi {{ rows|length }} gösteriliyor.</p>
+<div class="scroll"><table>
+<thead><tr><th class="num">Puan</th><th>Aday</th><th class="num">Deneyim</th><th>Zorunlu yetenek</th><th>Eksik</th><th>CV</th></tr></thead>
+<tbody>
+{% for r in rows %}
+<tr>
+  <td class="num"><span class="score {% if r.puan < 50 %}low{% endif %}">{{ r.puan }}</span></td>
+  <td>{{ r.ad }}</td>
+  <td class="num">{{ r.deneyim }} yıl</td>
+  <td>{{ r.zorunlu_var }} / {{ job.zorunlu|length }}</td>
+  <td>{% for s in r.eksik %}<span class="tag miss">{{ s|etiket }}</span>{% else %}-{% endfor %}</td>
+  <td><a href="{{ url_for('classic.cv', cid=r.id) }}">PDF indir ({{ r.pdf|bytes }})</a></td>
+</tr>
+{% endfor %}
+</tbody></table></div>
+{% endblock %}

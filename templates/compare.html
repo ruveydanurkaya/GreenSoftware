@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Karşılaştırma · Yeşil İşe Alım{% endblock %}
+{% macro row(label, cls, w, val) %}
+  <div class="bar-row"><span>{{ label }}</span><div class="bar-track"><div class="bar {{ cls }}" style="width:{{ w }}%"></div></div><span class="val">{{ val }}</span></div>
+{% endmacro %}
+{% macro metric(title, o, w, fmt) %}
+  <div class="metric">
+    <h3>{{ title }}</h3>
+    {{ row('Klasik', 'old', 100, (o|bytes if fmt=='bytes' else o|secs if fmt=='secs' else o|energy if fmt=='energy' else o|grams)) }}
+    {{ row('Yeşil', 'new', [100*w/o if o else 0, 0.6]|max, (w|bytes if fmt=='bytes' else w|secs if fmt=='secs' else w|energy if fmt=='energy' else w|grams)) }}
+    <div class="cut">%{{ '%.1f'|format(100*(1-w/o) if o else 0) }} azalma</div>
+  </div>
+{% endmacro %}
+{% block content %}
+<h1>Klasik sistem ile yeşil sistem</h1>
+
+{% if running %}
+  <div class="note" role="status">Ölçüm çalışıyor. Bu sırada başka işlem yapmayın, sonuçlar CPU ölçümünü etkiler. Sayfa birkaç saniyede bir yenilenir.</div>
+  <meta http-equiv="refresh" content="4">
+{% endif %}
+
+{% if not res %}
+  <p class="lead">Henüz ölçüm yok. Aşağıdan başlatın ya da terminalde <code>python run_benchmark.py --n 200</code> çalıştırın.</p>
+{% else %}
+{% set g = res.green %}{% set c = res.classic %}
+<p class="lead">İki sistem de aynı {{ res.params.n }} sentetik adayla, {{ res.n_jobs }} ilan için gerçekten çalıştırıldı. Klasik sistem her CV'yi yükletir, ayrıştırır ve İK her CV'yi {{ res.params.views }} kez indirir. Yeşil sistemde adaylar formu doldurur, İK hafif sayfalara bakar, yalnızca en iyi {{ res.n_shortlist }} adayın ({{ (res.params.shortlist*100)|int }}%) CV'si istenir.</p>
+
+<div class="pair">
+  <div><div class="stat">%{{ '%.1f'|format(100*(1-eg.sci/ec.sci)) }}</div><small>SCI azalması: aday başına {{ ec.sci|grams }} → {{ eg.sci|grams }} CO₂e</small></div>
+  <div><div class="stat">{{ res.avg_json_bytes|int }} B</div><small>Yeşil sistemde aday başına JSON (ölçüldü). Klasik sistemde aday başına PDF: {{ res.avg_pdf_bytes|bytes }}</small></div>
+</div>
+
+{{ metric('Depolama (diskte kalan)', c.stored, g.stored, 'bytes') }}
+{{ metric('Ağ aktarımı (yükleme + indirme)', c.transferred, g.transferred, 'bytes') }}
+{{ metric('Sunucu CPU süresi (tüm senaryo)', c.cpu_s, g.cpu_s, 'secs') }}
+{{ metric('Ayrıştırmaya harcanan CPU (klasik)', c.parse_cpu_s, 0.0, 'secs') }}
+{{ metric('Toplam enerji (CPU + ağ + depolama)', ec.kwh, eg.kwh, 'energy') }}
+{{ metric('Karbon (gCO₂e)', ec.g, eg.g, 'grams') }}
+
+<h2>Fazlara göre ölçüm</h2>
+<div class="scroll"><table>
+<thead><tr><th>Faz</th><th>Sistem</th><th class="num">İstek</th><th class="num">CPU</th><th class="num">Yükleme</th><th class="num">İndirme</th><th class="num">Ort. süre</th></tr></thead>
+<tbody>
+{% for key, label in phases.items() %}{% for name, s in (('Klasik', c), ('Yeşil', g)) %}{% if key in s.phases %}{% set ph = s.phases[key] %}
+<tr><td>{{ label }}</td><td>{{ name }}</td><td class="num">{{ ph.requests }}</td><td class="num">{{ ph.cpu_s|secs }}</td>
+<td class="num">{{ ph.up|bytes }}</td><td class="num">{{ ph.down|bytes }}</td><td class="num">{{ '%.1f'|format(ph.wall_mean_ms) }} ms</td></tr>
+{% endif %}{% endfor %}{% endfor %}
+</tbody></table></div>
+
+<h2>Ayrıştırma doğruluğu</h2>
+<p>Gerçek yeteneklerle çıkarılan yeteneklerin örtüşmesi (Jaccard): klasik <strong>{{ '%.3f'|format(c.accuracy) }}</strong>, yeşil <strong>{{ '%.3f'|format(g.accuracy) }}</strong>.
+{% if c.ocr_count %}Klasik sistemde {{ c.ocr_count }} CV taranmış belgeydi ve OCR ile okundu.{% endif %}
+Yeşil sistemde aday yeteneği kendisi seçtiği için ayrıştırma hatası oluşmaz.</p>
+
+<h2>Neyi ölçtük, neyi varsaydık?</h2>
+<div class="note">
+<p><strong>Ölçülen:</strong> Diskteki bayt, yüklenen ve indirilen bayt, sunucu CPU saniyesi (OCR gibi alt süreçler dahil) ve istek süreleri. İki sistem aynı süreçte, aynı veriyle, aynı senaryoyla çalıştı.</p>
+<p><strong>Varsayım:</strong> Yalnızca enerji katsayıları: CPU gücü, şebeke karbon yoğunluğu, ağ (0,06 kWh/GB) ve depolama (0,006 kWh/GB/yıl). Aşağıdan değiştirebilirsiniz.</p>
+<p><strong>Sınırlar:</strong> Sentetik PDF'lerin boyutu üretecimize bağlı (gömülü font, {{ res.params.photo_px }} px fotoğraf, tek sayfa). Gerçek CV'ler daha küçük ya da çok daha büyük olabilir. OCR yalnızca İngilizce modelle çalışır. Ölçüm tek makinede, {{ res.machine }}, {{ res.created }} tarihinde alındı. SCI hesabında gömülü karbon (M) yok.</p>
+</div>
+
+<form method="get" class="params">
+  <label class="f">Şebeke (gCO₂e/kWh)<input type="number" name="intensity" min="1" step="10" value="{{ p.intensity|int }}"></label>
+  <label class="f">CPU gücü (W)<input type="number" name="cpu_watts" min="1" step="1" value="{{ p.cpu_watts|int }}"></label>
+  <button type="submit">Enerjiyi yeniden hesapla</button>
+</form>
+{% endif %}
+
+<h2>Ölçümü yeniden çalıştır</h2>
+<form method="post" action="{{ url_for('compare_run') }}" class="params">
+  <label class="f">Aday sayısı<input type="number" name="n" min="20" max="1000" value="200"></label>
+  <label class="chip" style="align-self:end"><input type="checkbox" name="scan" value="1"><span>CV'lerin %10'u taranmış (OCR)</span></label>
+  <button type="submit" {% if running %}disabled{% endif %}>Ölçümü başlat</button>
+</form>
+{% endblock %}
